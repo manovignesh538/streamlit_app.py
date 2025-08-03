@@ -11,8 +11,8 @@ from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 import os
 
 # Set your Hugging Face API Token
-os.environ['HUGGINGFACEHUB_API_TOKEN'] = "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"
-os.environ['HF_TOKEN'] = "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"
+os.environ['HUGGINGFACEHUB_API_TOKEN'] = "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"
+os.environ['HF_TOKEN'] = "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"
 
 
 # Streamlit UI
