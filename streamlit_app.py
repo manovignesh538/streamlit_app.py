@@ -11,8 +11,11 @@ from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 import os
 
 # Set your Hugging Face API Token
-os.environ['HUGGINGFACEHUB_API_TOKEN'] = "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"
-os.environ['HF_TOKEN'] = "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"
+import os
+
+os.environ['HUGGINGFACEHUB_API_TOKEN'] = os.getenv("key1")
+os.environ['HF_TOKEN'] = os.getenv("key1")
+
 
 
 # Streamlit UI
@@ -40,7 +43,7 @@ if st.button("Analyze and Answer"):
 
             async with AsyncWebCrawler(config=browser_config) as crawler:
                 result = await crawler.arun(url=url, config=run_config)
-                #st.write(result)
+
                 doc = Document(page_content=result.markdown.raw_markdown)
                 text_splitter = CharacterTextSplitter(
                     chunk_size=1000,
@@ -53,23 +56,22 @@ if st.button("Analyze and Answer"):
                 db = Chroma.from_documents(chunk, embedding=emb, persist_directory='chroma_db')
 
                 docum = db.similarity_search(query, k=3)
-                deepseek = HuggingFaceEndpoint(repo_id='deepseek-ai/DeepSeek-R1-0528',
+                deepseek = HuggingFaceEndpoint(repo_id='deepseek-ai/DeepSeek-Prover-V2-671B',
                                                  provider='nebius',
                                                  temperature=0.5,
                                                  max_new_tokens=10,
                                                  task='conversational')
                 deep_seek = ChatHuggingFace(llm=deepseek,
-                                             repo_id='deepseek-ai/DeepSeek-R1-0528',
+                                             repo_id='deepseek-ai/DeepSeek-Prover-V2-671B',
                                              provider='nebius',
                                              temperature=0.5,
                                              max_new_tokens=10,
                                              task='conversational')
                 response = deep_seek.invoke(docum[0].page_content)
-                st.write(response.content)
                 return response.content
-
 
         with st.spinner("Crawling and retrieving answer..."):
             answer = asyncio.run(main(url, query))
 
         st.success("Answer:")
+        st.write(answer)
